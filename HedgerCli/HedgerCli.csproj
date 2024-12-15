@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Models\Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="order_books_data">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

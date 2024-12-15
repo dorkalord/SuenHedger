@@ -1,56 +1,9 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-
-public class OrderItem
-{
-    public Order Order { get; set; }
-    public override string ToString()
-    {
-        return $"order {Order.Type} amount: {Order.Amount}, order price: {Order.Price}";
-    }
-}
-
-public class Order
-{
-    public object Id { get; set; }
-    public DateTime Time { get; set; }
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public OrderType Type { get; set; }
-    public string Kind { get; set; }
-    public decimal Amount { get; set; }
-    public decimal Price { get; set; }
-
-    public override string ToString() {
-        return $"order amount: {Amount}, order price: {Price}";
-    }
-}
-
-public class OrderBook
-{
-    public DateTime AcqTime { get; set; }
-    /// <summary>
-    /// Available buyers
-    /// </summary>
-    public List<OrderItem> Bids { get; set; }
-    /// <summary>
-    /// Available sellers
-    /// </summary>
-    public List<OrderItem> Asks { get; set; }
-
-    public decimal BestMaxBidPrice { get; set; }
-    public decimal BestMinAskPrice { get; set; }
-
-    public override string ToString()
-    {
-        return $"Best buy price: {BestMaxBidPrice}, best sell price: {BestMinAskPrice}";
-    }
-}
-
-public enum OrderType { Buy, Sell };
 
 class Program
 {
+    private static string orderbookName = "order_books_data - origin"; //"order_books_data"
+
     static void Main()
     {
         var orderBooks = LoadOrderBooks();
@@ -79,8 +32,8 @@ class Program
 
     private static OrderBook[] LoadOrderBooks()
     {
-        var lines = File.ReadAllLines("order_books_data - origin");
-        //var lines = File.ReadAllLines("order_books_data");
+        var lines = File.ReadAllLines(orderbookName);
+
         OrderBook[] orderBooks = new OrderBook[lines.Length];
         int j = 0;
         foreach (var line in lines)
