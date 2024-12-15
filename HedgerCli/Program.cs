@@ -229,29 +229,29 @@ class Program
     static List<Order> HandleSellOrder(Order sellOrder, List<OrderItem> bids, decimal currantBalance = 0.0m)
     {
         var usedAsks = new List<Order>();
-        var availableBids = bids.Where(x => x.Order.Price >= sellOrder.Price).ToArray();
 
-        for (int i = 0; i < availableBids.Count(); i++)
+        foreach (var bid in bids.Where(x => x.Order.Price >= sellOrder.Price).Select(x => x.Order))
         {
-            if (currantBalance - availableBids[i].Order.Amount >= 0.0m)
+            if (currantBalance - bid.Amount >= 0.0m)
             {
-                currantBalance -= availableBids[i].Order.Amount;
+                currantBalance -= bid.Amount;
 
-                Console.WriteLine($"Sell to full order {availableBids[i].Order}");
+                Console.WriteLine($"Sell to full order {bid}");
 
-                usedAsks.Add(availableBids[i].Order);
-                if (currantBalance - availableBids[i].Order.Amount == 0)
+                usedAsks.Add(bid);
+                if (currantBalance - bid.Amount == 0)
                 {
                     break;
                 }
             }
-            else if (currantBalance - availableBids[i].Order.Amount < 0)
+            else if (currantBalance - bid.Amount < 0)
             {
-                Console.WriteLine($"Partial sell {currantBalance} to order {availableBids[i].Order}");
-                usedAsks.Add(availableBids[i].Order);
+                Console.WriteLine($"Partial sell {currantBalance} to order {bid}");
+                usedAsks.Add(bid);
                 break;
             }
         }
+
         return usedAsks;
     }
 
@@ -281,30 +281,30 @@ class Program
     static List<Order> HandleBuyOrder(Order buyOrder, List<OrderItem> asks, decimal currentSum = 0.0m)
     {
         var usedAsks = new List<Order>();
-        var availableAsks = asks.Where(x => x.Order.Price <= buyOrder.Price).ToArray();
 
-        for (int i = 0; i < availableAsks.Length; i++)
+        foreach (var ask in asks.Where(x => x.Order.Price <= buyOrder.Price).Select(x=> x.Order) )
         {
-            if (currentSum + availableAsks[i].Order.Amount <= buyOrder.Amount)
+            if (currentSum + ask.Amount <= buyOrder.Amount)
             {
-                currentSum += availableAsks[i].Order.Amount;
+                currentSum += ask.Amount;
 
-                Console.WriteLine($"Buy full order {availableAsks[i].Order}");
+                Console.WriteLine($"Buy full order {ask}");
 
-                usedAsks.Add(availableAsks[i].Order);
-                if (currentSum + availableAsks[i].Order.Amount == buyOrder.Amount)
+                usedAsks.Add(ask);
+                if (currentSum + ask.Amount == buyOrder.Amount)
                 {
                     break;
                 }
             }
-            else if (currentSum + availableAsks[i].Order.Amount > buyOrder.Amount)
+            else if (currentSum + ask.Amount > buyOrder.Amount)
             {
-                Console.WriteLine($"Partial buy {buyOrder.Amount - currentSum} order {availableAsks[i].Order}");
-                usedAsks.Add(availableAsks[i].Order);
+                Console.WriteLine($"Partial buy {buyOrder.Amount - currentSum} order {ask}");
+                usedAsks.Add(ask);
 
                 break;
             }
         }
+
         return usedAsks;
     }
 }
