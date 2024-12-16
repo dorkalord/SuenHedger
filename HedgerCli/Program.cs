@@ -1,10 +1,18 @@
-﻿using OrderDomain;
+﻿using Microsoft.Extensions.Configuration;
+using OrderDomain;
 
 class Program
 {
     static void Main()
     {
-        var orderBookReaderService = new OrderBookReaderService(null);
+        var memConfiguration = new ConfigurationBuilder()
+        .AddInMemoryCollection(new Dictionary<string, string?>()
+        {
+            ["OrderbookName"] = "order_books_data - origin"
+        })
+        .Build();
+
+        var orderBookReaderService = new OrderBookReaderService(memConfiguration);
         var orderService = new OrderService(orderBookReaderService);
 
         var requestedOrder = ReadOrderViaCli();
@@ -12,14 +20,14 @@ class Program
 
         Console.WriteLine(orderService.ExecuteOrder(requestedOrder));
 
-        //var testBuyOrder = new RequestOrder()
-        //{
-        //    Amount = 10,
-        //    Price = 2966,
-        //    Type = OrderTypeEnum.Buy,
-        //    Kind = OrderKindEnum.Limit
-        //};
-        //Console.WriteLine(orderService.ExecuteRequestOrder(testBuyOrder, "order_books_data"));
+        var testBuyOrder = new RequestOrder()
+        {
+            Amount = 10,
+            Price = 2966,
+            Type = OrderTypeEnum.Buy,
+            Kind = OrderKindEnum.Limit
+        };
+        Console.WriteLine(orderService.ExecuteOrder(testBuyOrder));
 
         var testSellOrder = new RequestOrder()
         {
@@ -28,7 +36,7 @@ class Program
             Type = OrderTypeEnum.Sell,
             Kind = OrderKindEnum.Limit
         };
-        Console.WriteLine(orderService.ExecuteOrder(testSellOrder));//"order_books_data - origin"
+        Console.WriteLine(orderService.ExecuteOrder(testSellOrder));
     }
 
     private static RequestOrder ReadOrderViaCli()
