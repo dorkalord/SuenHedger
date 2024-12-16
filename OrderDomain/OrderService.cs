@@ -109,8 +109,9 @@ namespace OrderDomain
                     }
                     else if (bitcoinsToSell < 0)
                     {
+                        var partial = requestOrder.Amount - response.requestBookOrders.Sum(x => x.Amount);
                         Console.WriteLine($"Partial sell {order.Amount + bitcoinsToSell} to book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId}");
-                        response.requestBookOrders.Add(new RequestBookOrder() { Amount = order.Amount, ExchangeId = order.ExchangeId, Price = order.Price, UseAmount = order.Amount + bitcoinsToSell });
+                        response.requestBookOrders.Add(new RequestBookOrder() { Amount = order.Amount, ExchangeId = order.ExchangeId, Price = order.Price, UseAmount = partial });
                         break;
                     }
                 }
@@ -145,8 +146,9 @@ namespace OrderDomain
                     }
                     else if (currentSum > requestOrder.Amount)
                     {
-                        Console.WriteLine($"Partial buy {requestOrder.Amount - currentSum} book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId}");
-                        response.requestBookOrders.Add(new RequestBookOrder() { Amount = order.Amount, ExchangeId = order.ExchangeId, Price = order.Price, UseAmount = currentSum - requestOrder.Amount });
+                        var partial = requestOrder.Amount - response.requestBookOrders.Sum(x => x.Amount);
+                        Console.WriteLine($"Partial buy {partial} book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId}");
+                        response.requestBookOrders.Add(new RequestBookOrder() { Amount = order.Amount, ExchangeId = order.ExchangeId, Price = order.Price, UseAmount = partial });
                         break;
                     }
                 }
