@@ -17,6 +17,11 @@ namespace OrderDomain
 
             Dictionary<decimal, List<BookOrder>> availableBookOrders = GetGoodOrdersForRequest(requestOrder);
 
+            if (!availableBookOrders.Any())
+            {
+                throw new Exception("No viable orders found.");
+            }
+
             var result = requestOrder.Type switch
             {
                 OrderTypeEnum.Buy => Buy(availableBookOrders, requestOrder),

@@ -1,8 +1,23 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.Design;
+using System.Text.Json.Serialization;
 
 public class OrderItemDto
 {
     public OrderDTO Order { get; set; }
+
+    public OrderItemDto() { }
+
+    public OrderItemDto(OrderTypeEnum orderType, OrderKindEnum orderKind, decimal amount, decimal price) 
+    {
+        Order = new OrderDTO()
+        {
+            Type = orderType,
+            Kind = orderKind,
+            Amount = amount,
+            Price = price
+        };
+    }
+
     public override string ToString()
     {
         return $"order {Order.Type} amount: {Order.Amount}, order price: {Order.Price}";
@@ -10,9 +25,6 @@ public class OrderItemDto
 }
 public class OrderDTO
 {
-    public object Id { get; set; }
-    public DateTime Time { get; set; }
-
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public OrderTypeEnum Type { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -38,12 +50,5 @@ public class OrderBookDto
     /// </summary>
     public List<OrderItemDto> Asks { get; set; }
 
-    public decimal BestMaxBidPrice { get; set; }
-    public decimal BestMinAskPrice { get; set; }
-
-    public override string ToString()
-    {
-        return $"Best buy price: {BestMaxBidPrice}, best sell price: {BestMinAskPrice}";
-    }
 }
 
