@@ -56,7 +56,7 @@ namespace OrderDomain
                         availableBookOrders.Add(order.Price, []);
                     }
 
-                    availableBookOrders[order.Price].Add(new() { Amount = order.Amount, Price = order.Price, ExchangeId = orderBook.AcqTime });
+                    availableBookOrders[order.Price].Add(new() { Amount = order.Amount, Price = order.Price, ExchangeId = orderBook.AcqTime.ToLongDateString() });
                 }
             }
 

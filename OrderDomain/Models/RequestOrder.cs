@@ -1,26 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 
-public class RequestOrder
-{
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public OrderTypeEnum Type;
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public OrderKindEnum Kind;
-    public decimal Amount;
-    public decimal Price;
-
-}
-
 public class BookOrder
 {
-    public DateTime ExchangeId;
-    public decimal Amount;
-    public decimal Price;
+    public string ExchangeId { get; set; }
+    public decimal Amount { get; set; }
+    public decimal Price { get; set; }
 }
 
 public class RequestBookOrder : BookOrder
 {
-    public decimal UseAmount;
+    public decimal UseAmount { get; set; }
 
     public override string ToString()
     {
@@ -28,9 +17,20 @@ public class RequestBookOrder : BookOrder
     }
 }
 
+public class RequestOrder
+{
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public OrderTypeEnum Type { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public OrderKindEnum Kind { get; set; }
+    public decimal Amount { get; set; }
+    public decimal Price { get; set; }
+
+}
+
 public class OrderResponse : RequestOrder
 {
-    public List<RequestBookOrder> requestBookOrders;
+    public List<RequestBookOrder> requestBookOrders { get; set; }
 
     public OrderResponse(RequestOrder requestOrder)
     {

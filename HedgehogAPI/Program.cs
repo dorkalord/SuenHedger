@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using OrderDomain;
+using System.Text.Json.Serialization;
 
 namespace HedgehogAPI
 {
@@ -19,6 +21,15 @@ namespace HedgehogAPI
                 }));
 
             builder.Services.AddOrderDomainGroup();
+
+            builder.Services.ConfigureHttpJsonOptions(options =>
+            {
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+            builder.Services.Configure<JsonOptions>(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
             var app = builder.Build();
 
