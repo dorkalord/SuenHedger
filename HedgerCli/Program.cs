@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OrderDomain;
+using System.Globalization;
 
 class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
         var memConfiguration = new ConfigurationBuilder()
         .AddInMemoryCollection(new Dictionary<string, string?>()
@@ -15,28 +16,28 @@ class Program
         var orderBookReaderService = new OrderBookReaderService(memConfiguration);
         var orderService = new OrderService(orderBookReaderService);
 
-        var requestedOrder = ReadOrderViaCli();
+        var requestedOrder = args is null ? ReadOrderViaCli() : ReadOrderViaArgs(args);
 
 
         Console.WriteLine(orderService.ExecuteOrder(requestedOrder));
 
-        var testBuyOrder = new RequestOrder()
-        {
-            Amount = 10,
-            Price = 2966,
-            Type = OrderTypeEnum.Buy,
-            Kind = OrderKindEnum.Limit
-        };
-        Console.WriteLine(orderService.ExecuteOrder(testBuyOrder));
+        //var testBuyOrder = new RequestOrder()
+        //{
+        //    Amount = 10,
+        //    Price = 2966,
+        //    Type = OrderTypeEnum.Buy,
+        //    Kind = OrderKindEnum.Limit
+        //};
+        //Console.WriteLine(orderService.ExecuteOrder(testBuyOrder));
 
-        var testSellOrder = new RequestOrder()
-        {
-            Amount = 10,
-            Price = 2960,
-            Type = OrderTypeEnum.Sell,
-            Kind = OrderKindEnum.Limit
-        };
-        Console.WriteLine(orderService.ExecuteOrder(testSellOrder));
+        //var testSellOrder = new RequestOrder()
+        //{
+        //    Amount = 10,
+        //    Price = 2960,
+        //    Type = OrderTypeEnum.Sell,
+        //    Kind = OrderKindEnum.Limit
+        //};
+        //Console.WriteLine(orderService.ExecuteOrder(testSellOrder));
     }
 
     private static RequestOrder ReadOrderViaCli()
@@ -76,8 +77,73 @@ class Program
         }
 
         Console.WriteLine($"How much BTC would you like to {orderType} : ");
-        decimal amount = 0.0m;
-        var isValidDecimal = decimal.TryParse(Console.ReadLine(), out amount);
+        var amount = ValidateAmount(Console.ReadLine());
+
+        switch (orderType)
+        {
+            case OrderTypeEnum.Buy:
+                Console.WriteLine($"What is he maximum you are willing to pay per one BTC : ");
+                break;
+            case OrderTypeEnum.Sell:
+                Console.WriteLine($"What is he minimum you are willing to sell per one BTC : ");
+                break;
+        }
+        var limit = ValidateLimit(Console.ReadLine());
+
+        Console.WriteLine($"Order {orderType} for {amount} with limit {limit} is now processing...");
+
+        return new RequestOrder()
+        {
+            Amount = amount,
+            Price = limit,
+            Type = orderType,
+            Kind = OrderKindEnum.Limit
+        };
+    }
+
+    private static RequestOrder ReadOrderViaArgs(string[] args)
+    {
+        if (args.Length < 3)
+        {
+            throw new Exception("Missing arguments. Example of a valid arguments Buy 2,10 2891,12");
+        }
+        if (args.Length > 3)
+        {
+            throw new Exception("Too many arguments. Example of a valid arguments Buy 2,10 2891,12");
+        }
+
+        if (!Enum.TryParse(typeof(OrderTypeEnum), args[0], out var orderType))
+        {
+            throw new InvalidCastException("We could not parse the provided value. Use Buy or Sale");
+        }
+
+        return new RequestOrder()
+        {
+            Amount = ValidateAmount(args[1].Replace(',', '.')),
+            Price = ValidateLimit(args[2].Replace(',', '.')),
+            Type = (OrderTypeEnum)orderType,
+            Kind = OrderKindEnum.Limit
+        };
+    }
+
+    private static decimal ValidateLimit(string limitString)
+    {
+        var isValidDecimal = decimal.TryParse(limitString, NumberStyles.Any, CultureInfo.InvariantCulture, out var limit);
+
+        if (!isValidDecimal)
+        {
+            throw new InvalidCastException("We could not parse the provided value.");
+        }
+        else if (limit < 0.0m)
+        {
+            throw new ArgumentOutOfRangeException("Only positive numbers are accepted.");
+        }
+        return limit;
+    }
+
+    private static decimal ValidateAmount(string amountString)
+    {
+        var isValidDecimal = decimal.TryParse(amountString, NumberStyles.Any, CultureInfo.InvariantCulture, out var amount);
 
         if (!isValidDecimal)
         {
@@ -96,39 +162,6 @@ class Program
             throw new ArgumentOutOfRangeException("More than all bitcoins to ever exist.");
         }
 
-
-        switch (orderType)
-        {
-            case OrderTypeEnum.Buy:
-                Console.WriteLine($"What is he maximum you are willing to pay per one BTC : ");
-                break;
-            case OrderTypeEnum.Sell:
-                Console.WriteLine($"What is he minimum you are willing to sell per one BTC : ");
-                break;
-        }
-        decimal limit = 0.0m;
-        isValidDecimal = decimal.TryParse(Console.ReadLine(), out limit);
-
-        if (!isValidDecimal)
-        {
-            throw new InvalidCastException("We could not parse the provided value.");
-        }
-        else if (amount < 0.0m)
-        {
-            throw new ArgumentOutOfRangeException("Only positive numbers are accepted.");
-        }
-
-
-        Console.WriteLine($"Order {orderType} for {amount} with limit {limit} is now processing...");
-
-        return new RequestOrder()
-        {
-            Amount = amount,
-            Price = limit,
-            Type = orderType,
-            Kind = OrderKindEnum.Limit
-        };
+        return amount;
     }
-
 }
-
