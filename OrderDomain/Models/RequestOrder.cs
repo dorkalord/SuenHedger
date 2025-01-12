@@ -38,7 +38,7 @@ public class OrderResponse : RequestOrder
     public override string ToString()
     {
         return $"To fulfil request order of type {Type} for {Amount} BTC "
-            + (Type == OrderTypeEnum.Buy ? $"you need {totalCost} € " : $"you will get {totalCost} € ")
+            + (Type == OrderTypeEnum.Buy ? $"you need {decimal.Round(totalCost, 2, MidpointRounding.AwayFromZero)} € " : $"you will get {decimal.Round(totalCost, 2, MidpointRounding.AwayFromZero)} € ")
             + $"execute orders:\r\n{string.Concat(requestBookOrders.Select(x => x.ToString()))}";
     }
 }
