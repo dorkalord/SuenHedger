@@ -90,7 +90,7 @@
                     bitcoinsToSell -= order.Amount;
                     if (bitcoinsToSell >= 0.0m)
                     {
-                        Console.WriteLine($"Sell in full to book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId}");
+                        //Console.WriteLine($"Sell in full to book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId.ToLongTimeString()}");
 
                         response.requestBookOrders.Add(new RequestBookOrder() { Amount = order.Amount, ExchangeId = order.ExchangeId, Price = order.Price, UseAmount = order.Amount });
                         if (bitcoinsToSell == 0)
@@ -101,7 +101,7 @@
                     else if (bitcoinsToSell < 0)
                     {
                         var partial = requestOrder.Amount - response.requestBookOrders.Sum(x => x.Amount);
-                        Console.WriteLine($"Partial sell {order.Amount + bitcoinsToSell} to book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId}");
+                        //Console.WriteLine($"Partial sell {order.Amount + bitcoinsToSell} to book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId.ToLongTimeString()}");
                         response.requestBookOrders.Add(new RequestBookOrder() { Amount = order.Amount, ExchangeId = order.ExchangeId, Price = order.Price, UseAmount = partial });
                         break;
                     }
@@ -127,7 +127,7 @@
                     currentSum += order.Amount;
                     if (currentSum <= requestOrder.Amount)
                     {
-                        Console.WriteLine($"Buy full book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId}");
+                        //Console.WriteLine($"Buy full book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId.ToLongTimeString()}");
 
                         response.requestBookOrders.Add(new RequestBookOrder() { Amount = order.Amount, ExchangeId = order.ExchangeId, Price = order.Price, UseAmount = order.Amount });
                         if (currentSum == requestOrder.Amount)
@@ -138,7 +138,7 @@
                     else if (currentSum > requestOrder.Amount)
                     {
                         var partial = requestOrder.Amount - response.requestBookOrders.Sum(x => x.Amount);
-                        Console.WriteLine($"Partial buy {partial} book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId}");
+                        //Console.WriteLine($"Partial buy {partial} book order {order.Amount} @ {order.Price}, from exchange {order.ExchangeId.ToLongTimeString()}");
                         response.requestBookOrders.Add(new RequestBookOrder() { Amount = order.Amount, ExchangeId = order.ExchangeId, Price = order.Price, UseAmount = partial });
                         break;
                     }
