@@ -42,8 +42,8 @@
             {
                 var bookOrdersWithinRequestOrderPrice = requestOrder.Type switch
                 {
-                    OrderTypeEnum.Buy => orderBook.Asks.Select(x => x.Order).Where(x => x.Price <= requestOrder.Price),
-                    OrderTypeEnum.Sell => orderBook.Bids.Select(x => x.Order).Where(x => x.Price >= requestOrder.Price),
+                    OrderTypeEnum.Buy => orderBook.Asks.Select(x => x.Order),
+                    OrderTypeEnum.Sell => orderBook.Bids.Select(x => x.Order),
                     _ => throw new NotImplementedException()
                 };
 
@@ -54,7 +54,7 @@
                         availableBookOrders.Add(order.Price, []);
                     }
 
-                    availableBookOrders[order.Price].Add(new() { Amount = order.Amount, Price = order.Price, ExchangeId = orderBook.AcqTime.ToLongDateString() });
+                    availableBookOrders[order.Price].Add(new() { Amount = order.Amount, Price = order.Price, ExchangeId = orderBook.AcqTime });
                 }
             }
 
@@ -74,18 +74,6 @@
             if (order.Amount > 21000000m)
             {
                 throw new ArgumentOutOfRangeException("More than all bitcoins to ever exist.");
-            }
-            if (order.Price < 0.0m)
-            {
-                throw new ArgumentOutOfRangeException("Only positive numbers are accepted for Price.");
-            }
-            if (order.Type != OrderTypeEnum.Buy && order.Type != OrderTypeEnum.Sell)
-            {
-                throw new ArgumentOutOfRangeException("Order Type not supported, use only Buy or Sell");
-            }
-            if (order.Kind != OrderKindEnum.Limit )
-            {
-                throw new NotImplementedException("Only Limit order kind supported");
             }
         }
 
@@ -160,7 +148,6 @@
                     break;
                 }
             }
-
             return response;
         }
     }

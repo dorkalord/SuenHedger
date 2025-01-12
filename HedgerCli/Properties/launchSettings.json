@@ -2,7 +2,7 @@
   "profiles": {
     "HedgerCli": {
       "commandName": "Project",
-      "commandLineArgs": "Buy 2,01 3000,12"
+      "commandLineArgs": "Buy 2.01"
     }
   }
 }
