@@ -27,7 +27,7 @@ public class RequestOrder
 public class OrderResponse : RequestOrder
 {
     public List<RequestBookOrder> requestBookOrders { get; set; }
-
+    public decimal totalCost => requestBookOrders.Sum(x => x.UseAmount * x.Price);
     public OrderResponse(RequestOrder requestOrder)
     {
         Type = requestOrder.Type;
@@ -37,6 +37,8 @@ public class OrderResponse : RequestOrder
 
     public override string ToString()
     {
-        return $"To fulfil request order of type {Type} for {Amount} BTC execute orders:\r\n{string.Concat(requestBookOrders.Select(x => x.ToString()))}";
+        return $"To fulfil request order of type {Type} for {Amount} BTC "
+            + (Type == OrderTypeEnum.Buy ? $"you need {totalCost} € " : $"you will get {totalCost} € ")
+            + $"execute orders:\r\n{string.Concat(requestBookOrders.Select(x => x.ToString()))}";
     }
 }
